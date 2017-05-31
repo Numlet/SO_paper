@@ -32,7 +32,7 @@ import iris
 dir_scripts='/nfs/see-fs-01_users/eejvt/UKCA_postproc'#Change this to the downloaded folder
 sys.path.append(dir_scripts)
 import UKCA_lib as ukl
-
+import glob
 sav_fol='/nfs/see-fs-01_users/eejvt/SO_paper/'
 
 
@@ -92,15 +92,22 @@ def check_nan(array):
     return np.isnan(array).any()
 
 
+from collections import OrderedDict
 
 
+param=OrderedDict()
+param['M92']=meyers_param
+param['DM10']=demott
+param['DM15']=demott_dust
+param['VT17_HIGH']=GLO_high
+param['VT17_MEAN']=GLO_mean
+param['VT17_MIN']=GLO_low
 #def choose_param
 
-from collections import OrderedDict
 
 run_path=OrderedDict()
 
-run_path={}
+#run_path={}
 run_path['C1_GLOBAL']='/nfs/a201/eejvt/CASIM/SO_KALLI/GLOBAL/'
 run_path['C1_M92']='/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/MEYERS/'#
 #run_path['C1_DM10']='/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/DEMOTT_GLO_N05_HAMISHPROF/'#

@@ -12,7 +12,7 @@ from base_imports import *
 
 Temp_min=-35+273.15
 Temp_min=0
-SW_dict=OrderedDict()
+LWP_dict=OrderedDict()
 
 
 plt.figure(figsize=(20,20))
@@ -25,32 +25,30 @@ for key in run_path:
 #        if 'C3' in key:
 #            continue
         sample_cube=stc.clean_cube(iris.load(run_path[key[:-6]+'DM10']+'L1/L1_CTT_Cloud_top_temperature.nc')[0])[itime,:,:]
-        cube_SW=iris.load(ukl.Obtain_name(run_path[key]+'L1/','LWP'))[0][itime,:,:]
+        cube_LWP=iris.load(ukl.Obtain_name(run_path[key]+'L1/','LWP'))[0][itime,:,:]
         cube=stc.clean_cube(iris.load(run_path[key[:-6]+'DM10']+'L1/L1_CTT_Cloud_top_temperature.nc')[0])[itime,:,:]
 #        cube = cube.regrid(sample_cube, iris.analysis.Linear())
-        cube_SW = cube_SW.regrid(sample_cube, iris.analysis.Linear())
+        cube_LWP = cube_LWP.regrid(sample_cube, iris.analysis.Linear())
     else:
         cube=stc.clean_cube(iris.load(run_path[key]+'L1/L1_CTT_Cloud_top_temperature.nc')[0])[itime,:,:]
-        cube_SW=stc.clean_cube(iris.load(ukl.Obtain_name(run_path[key]+'L1/','LWP'))[0])[itime,:,:]
+        cube_LWP=stc.clean_cube(iris.load(ukl.Obtain_name(run_path[key]+'L1/','LWP'))[0])[itime,:,:]
     mask=cube.data<Temp_min
     plt.subplot(5,5,i)
 
     masked_cube=cube.data
     masked_cube[mask]=np.nan
 #    plt.imshow(cube.data[:,:])
-    masked_cube=cube_SW.data
+    masked_cube=cube_LWP.data
     masked_cube[mask]=np.nan
 #    plt.imshow(cube[12,:,:].data)
     plt.title(key)
     plt.imshow(masked_cube[:,:])
-    SW_dict[key]=np.nanmean(masked_cube)
+    LWP_dict[key]=np.nanmean(masked_cube)
     plt.colorbar()
     print cube
     i=i+1
-#SW_dict['C3_GLOBAL']=SW_dict['C2_GLOBAL']#fix to avoid breaking, correct!! also the global runs will give more problems as there is not enough low cloud
+#LWP_dict['C3_GLOBAL']=LWP_dict['C2_GLOBAL']#fix to avoid breaking, correct!! also the global runs will give more problems as there is not enough low cloud
 #%%
-
-
 
 
 import glob
@@ -109,7 +107,7 @@ cm=plt.cm.RdBu_r
 X,Y=np.meshgrid(model_lons, model_lats)
 grid_z1 = sc.interpolate.griddata(coord, LWP_flat, (X,Y), method='linear')
 
-SW_dict['C1_SAT']=np.nanmean(grid_z1)
+LWP_dict['C1_SAT']=np.nanmean(grid_z1)
 
 #%%
 
@@ -172,7 +170,7 @@ X,Y=np.meshgrid(model_lons, model_lats)
 grid_z1 = sc.interpolate.griddata(coord, LWP_flat, (X,Y), method='linear')
 
 
-SW_dict['C2_SAT']=np.nanmean(grid_z1)
+LWP_dict['C2_SAT']=np.nanmean(grid_z1)
 #%%
 
 path='/nfs/a201/eejvt/CASIM/SO_KALLI/SATELLITE/'
@@ -235,7 +233,7 @@ grid_z1 = sc.interpolate.griddata(coord, LWP_flat, (X,Y), method='linear')
 plt.figure()
 plt.imshow(grid_z1)
 
-SW_dict['C3_SAT']=np.nanmean(grid_z1)
+LWP_dict['C3_SAT']=np.nanmean(grid_z1)
 
 
 
@@ -246,17 +244,17 @@ list_colors=['y','r','green','brown','k','grey','silver']
 list_params=['SAT','GLOBAL','M92','DM10','DM15','VT17_HIGH','VT17_MEAN','VT17_MIN']
 list_colors=['b','y','r','green','brown','k','grey','silver']
 list_clouds=['C1','C2','C3']
-#SW_dict['C1_SAT']=0
-#SW_dict['C2_SAT']=0
-#SW_dict['C3_SAT']=0
+#LWP_dict['C1_SAT']=0
+#LWP_dict['C2_SAT']=0
+#LWP_dict['C3_SAT']=0
 N = len(list_clouds)
 ind = np.arange(N)  # the x locations for the groups
 fig, ax = plt.subplots()
 width = 0.1       # the width of the bars
 iparam=0
 for param in list_params:
-    means = tuple([SW_dict[cloud+'_'+param] for cloud in list_clouds])
-    std = tuple([SW_dict[cloud+'_'+param]*0.0 for cloud in list_clouds])
+    means = tuple([LWP_dict[cloud+'_'+param] for cloud in list_clouds])
+    std = tuple([LWP_dict[cloud+'_'+param]*0.0 for cloud in list_clouds])
 
 
     rects1 = ax.bar(ind+iparam*width, means, width, color=list_colors[iparam], yerr=std,label=param)

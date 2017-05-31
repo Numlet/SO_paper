@@ -7,7 +7,7 @@ Created on Fri May 19 10:35:16 2017
 """
 from base_imports import *
 
-import glob
+
 
 path='/nfs/a201/eejvt/CASIM/SO_KALLI/SATELLITE/'
 lon_offset=7
@@ -35,7 +35,7 @@ dataset = read_data()
 times=dataset.variables['time'][0,]
 LWP=dataset.variables['cloud'][0,]
 LWP[LWP==missing]=np.nan
-LWP[times<12]=np.nan
+LWP[times<13]=np.nan
 LWP[times>15]=np.nan
 lon=dataset.variables['longitude']
 lat=dataset.variables['latitude']
@@ -65,7 +65,8 @@ X,Y=np.meshgrid(model_lons, model_lats)
 grid_z1 = sc.interpolate.griddata(coord, LWP_flat, (X,Y), method='linear')
 
 LWP_satellite_dict['C1_SAT']=grid_z1
-
+plt.figure()
+plt.imshow(grid_z1)
 #%%
 
 path='/nfs/a201/eejvt/CASIM/SO_KALLI/SATELLITE/'
@@ -160,7 +161,7 @@ cube_DM10 = iris.load(ukl.Obtain_name(sim_path+'/DM10/'+sub_folder,code))[0]
 
 times=dataset.variables['time'][0,]
 LWP=dataset.variables['cloud'][0,]
-LWP[times<14]=np.nan
+LWP[times<15]=np.nan
 LWP[times>18]=np.nan
 LWP[LWP==missing]=np.nan
 

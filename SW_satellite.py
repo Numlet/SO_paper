@@ -32,7 +32,7 @@ t16=(datetime.datetime(2015,03,1,16)-datetime.datetime(1970,1,1)).total_seconds(
     
 sim_path='/nfs/a201/eejvt/CASIM/SECOND_CLOUD/'
 
-cube_DM10 =  stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/DM10/All_time_steps/','m01s01i208'))[0])
+cube_DM10 =  iris.load(ukl.Obtain_name(sim_path+'/DM10/All_time_steps/','m01s01i208'))[0]
 
 #SW_dict[c2]
 
