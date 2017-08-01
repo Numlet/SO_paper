@@ -56,7 +56,7 @@ grid_z1 = sc.interpolate.griddata(coord, sat_LW, (X,Y), method='linear')
 plt.imshow(grid_z1)
 sat_cube=cube_DM10[16,:,:]
 sat_cube.data=grid_z1
-SW_satellite_dict['C2_SAT']=grid_z1
+SW_satellite_dict['C1_SATELLITE']=grid_z1
 
 #%%
 path='/nfs/a201/eejvt/CASIM/THIRD_CLOUD/SATELLITE/'
@@ -80,7 +80,7 @@ t16=(datetime.datetime(2015,01,10,16)-datetime.datetime(1970,1,1)).total_seconds
 sim_path='/nfs/a201/eejvt/CASIM/THIRD_CLOUD/'
 
 cube_DM10 = iris.load(ukl.Obtain_name(sim_path+'/DM10/All_time_steps/','m01s01i208'))[0]
-#SW_dict['C3_SAT']=np.nanmean(grid_z1)
+#SW_dict['C3_SATELLITE']=np.nanmean(grid_z1)
 reload(stc)
 model_lons,model_lats=stc.unrotated_grid(cube_DM10)
 #times_range=np.argwhere((times_ceres >= tdi) & (times_ceres <=tde))
@@ -98,7 +98,7 @@ X,Y=np.meshgrid(model_lons, model_lats)
 #data_old= sc.interpolate.griddata(coord_model, cube_oldm.data.flatten(), (X,Y), method='linear')
 #grid_z0 = sc.interpolate.griddata(coord, sat_SW, (X,Y), method='nearest')
 grid_z1 = sc.interpolate.griddata(coord, sat_LW, (X,Y), method='linear')
-SW_satellite_dict['C3_SAT']=grid_z1
+SW_satellite_dict['C2_SATELLITE']=grid_z1
 #%%
 path='/nfs/a201/eejvt/CASIM/SO_KALLI/SATELLITE/'
 from scipy.io import netcdf
@@ -148,4 +148,4 @@ X,Y=np.meshgrid(model_lons, model_lats)
 #grid_z0 = sc.interpolate.griddata(coord, sat_SW, (X,Y), method='nearest')
 grid_z1 = sc.interpolate.griddata(coord, sat_LW, (X,Y), method='linear')
 
-SW_satellite_dict['C1_SAT']=grid_z1
+SW_satellite_dict['C3_SATELLITE']=grid_z1

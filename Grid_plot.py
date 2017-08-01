@@ -14,7 +14,7 @@ congrid=True
 no_bounds=True
 cut=50
 
-plt.figure(figsize=(40,20))
+plt.figure(figsize=(20,10))
 #plt.figure()
 
 list_params=['SAT','GLOBAL','M92','DM10','VT17_MEAN']
@@ -71,18 +71,25 @@ for cloud in list_clouds:
 plt.savefig(sav_fol+'Grid_LWP.png')
 
 #%%
+from mpl_toolkits.axes_grid1 import make_axes_locatable
 iplot=1
-plt.figure(figsize=(40,20))
+plt.figure(figsize=(20,10))
 cmap=plt.cm.RdBu_r
 #plt.figure()
 levels_SW=np.linspace(0,750,15).tolist()
 for cloud in list_clouds:
     print cloud
     iparam=0
-    itime=cloud_it[cloud]
+    
     for param in list_params:
         name=cloud+'_'+param
+        itime=cloud_it[cloud]
+        
         print name
+        
+        if name=='C3_DM10':
+            itime=11
+        
         cube_high_res=stc.clean_cube(iris.load(ukl.Obtain_name(run_path[cloud+'_M92']+'All_time_steps/','m01s01i208'))[0],clean_value)
         if param=='SAT':
             SW=SW_satellite_dict[name]
@@ -99,11 +106,15 @@ for cloud in list_clouds:
         model_lons,model_lats=stc.unrotated_grid(cube_high_res)
         X,Y=np.meshgrid(model_lons, model_lats)
 
-        plt.subplot(iy,ix,iplot)
+        ax=plt.subplot(iy,ix,iplot)
         plt.title(name)
-        plt.contourf(X,Y,cube[itime,:,:].data,levels_SW,cmap=cmap) 
-        cb=plt.colorbar()
-        if list_params[-1]==param:
+        im=plt.contourf(X,Y,cube[itime,:,:].data,levels_SW,cmap=cmap) 
+        if param==list_params[-1]:
+            divider = make_axes_locatable(ax)
+            cax = divider.append_axes("right", size="5%", pad=0.05)
+
+            cb=plt.colorbar(im, cax=cax)
+#            cb=plt.colorbar()
             cb.set_label('$W/m^2$')
         iplot=iplot+1
 plt.savefig(sav_fol+'Grid_SW.png')

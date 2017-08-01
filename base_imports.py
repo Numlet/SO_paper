@@ -34,12 +34,12 @@ sys.path.append(dir_scripts)
 import UKCA_lib as ukl
 import glob
 sav_fol='/nfs/see-fs-01_users/eejvt/SO_paper/'
-
+pspc_fol='/nfs/a201/eejvt/CASIM/PSPC_DATA/'
 
 
 n05=56000*1e-6
 n05_dust=56000*1e-6
-n05_GLOMAP=21.26#cm-3 surface SO 
+n05_GLOMAP=21.26#cm-3 surface SO
 n05_bug_meters=56000
 
 
@@ -108,41 +108,41 @@ param['VT17_MIN']=GLO_low
 run_path=OrderedDict()
 
 #run_path={}
-run_path['C1_GLOBAL']='/nfs/a201/eejvt/CASIM/SO_KALLI/GLOBAL/'
-run_path['C1_M92']='/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/MEYERS/'#
-#run_path['C1_DM10']='/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/DEMOTT_GLO_N05_HAMISHPROF/'#
-run_path['C1_DM10']='/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/'#
-run_path['C1_VT17_HIGH']='/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GLO_HIGH/'
-run_path['C1_VT17_MEAN']='/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GLO_MEAN/'
-run_path['C1_VT17_MIN']='/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GLO_MIN/'
-run_path['C1_DM15']='/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_HAMISH_DMDUST/'#
+run_path['C3_GLOBAL']='/nfs/a201/eejvt/CASIM/SO_KALLI/GLOBAL/'
+run_path['C3_M92']='/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/MEYERS/'#
+#run_path['C3_DM10']='/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/DEMOTT_GLO_N05_HAMISHPROF/'#
+run_path['C3_DM10']='/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/'#
+run_path['C3_VT17_HIGH']='/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GLO_HIGH/'
+run_path['C3_VT17_MEAN']='/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GLO_MEAN/'
+run_path['C3_VT17_MIN']='/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GLO_MIN/'
+run_path['C3_DM15']='/nfs/a201/eejvt/CASIM/SO_KALLI/NO_CLOUD_SQUEME/GP_HAMISH_DMDUST/'#
 
-sim_path_C2='/nfs/a201/eejvt/CASIM/SECOND_CLOUD'
+sim_path_C1='/nfs/a201/eejvt/CASIM/SECOND_CLOUD'
 
+run_path['C1_GLOBAL']=sim_path_C1+'/GLOBAL/'
+run_path['C1_M92']=sim_path_C1+'/MEYERS/'
+run_path['C1_DM10']=sim_path_C1+'/DM10/'
+run_path['C1_VT17_HIGH']=sim_path_C1+'/GLO_HIGH/'
+run_path['C1_VT17_MEAN']=sim_path_C1+'/GLO_MEAN/'
+run_path['C1_VT17_MIN']=sim_path_C1+'/GLO_MIN/'
+run_path['C1_DM15']=sim_path_C1+'/GP_HAM_DMDUST/'
+
+sim_path_C2='/nfs/a201/eejvt/CASIM/THIRD_CLOUD'
 run_path['C2_GLOBAL']=sim_path_C2+'/GLOBAL/'
 run_path['C2_M92']=sim_path_C2+'/MEYERS/'
 run_path['C2_DM10']=sim_path_C2+'/DM10/'
 run_path['C2_VT17_HIGH']=sim_path_C2+'/GLO_HIGH/'
 run_path['C2_VT17_MEAN']=sim_path_C2+'/GLO_MEAN/'
 run_path['C2_VT17_MIN']=sim_path_C2+'/GLO_MIN/'
-run_path['C2_DM15']=sim_path_C2+'/GP_HAM_DMDUST/'
+run_path['C2_DM15']=sim_path_C2+'/DM_DUST/'
 
-sim_path_C3='/nfs/a201/eejvt/CASIM/THIRD_CLOUD'
-run_path['C3_GLOBAL']=sim_path_C3+'/GLOBAL/'
-run_path['C3_M92']=sim_path_C3+'/MEYERS/'
-run_path['C3_DM10']=sim_path_C3+'/DM10/'
-run_path['C3_VT17_HIGH']=sim_path_C3+'/GLO_HIGH/'
-run_path['C3_VT17_MEAN']=sim_path_C3+'/GLO_MEAN/'
-run_path['C3_VT17_MIN']=sim_path_C3+'/GLO_MIN/'
-run_path['C3_DM15']=sim_path_C3+'/DM_DUST/'
 
-        
 
 cloud_it={}
-cloud_it['C1']=13
-cloud_it['C2']=16
-cloud_it['C3']=17
-        
-        
-        
+cloud_it['C3']=13
+cloud_it['C1']=16
+cloud_it['C2']=17
+
+
+
 #

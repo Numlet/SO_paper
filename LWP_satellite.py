@@ -64,7 +64,7 @@ cm=plt.cm.RdBu_r
 X,Y=np.meshgrid(model_lons, model_lats)
 grid_z1 = sc.interpolate.griddata(coord, LWP_flat, (X,Y), method='linear')
 
-LWP_satellite_dict['C1_SAT']=grid_z1
+LWP_satellite_dict['C3_SATELLITE']=grid_z1
 plt.figure()
 plt.imshow(grid_z1)
 #%%
@@ -128,7 +128,7 @@ X,Y=np.meshgrid(model_lons, model_lats)
 grid_z1 = sc.interpolate.griddata(coord, LWP_flat, (X,Y), method='linear')
 
 
-LWP_satellite_dict['C2_SAT']=grid_z1
+LWP_satellite_dict['C1_SATELLITE']=grid_z1
 #%%
 
 path='/nfs/a201/eejvt/CASIM/SO_KALLI/SATELLITE/'
@@ -191,5 +191,5 @@ grid_z1 = sc.interpolate.griddata(coord, LWP_flat, (X,Y), method='linear')
 plt.figure()
 plt.imshow(grid_z1)
 
-LWP_satellite_dict['C3_SAT']=grid_z1
+LWP_satellite_dict['C2_SATELLITE']=grid_z1
 

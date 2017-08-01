@@ -7,49 +7,66 @@ Created on Mon May  8 14:00:57 2017
 """
 
 from base_imports import *
+#cube_large=iris.load('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/LARGE_DOMAIN/All_time_steps/All_time_steps_m01s00i254_mass_fraction_of_cloud_liquid_water_in_air.nc')[0]
+#cube_large=iris.load('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/LARGE_DOMAIN/All_time_steps/All_time_steps_m01s01i208_toa_outgoing_shortwave_flux.nc')[0]
+#cube_large_regrid=cube_large.regrid(cube, iris.analysis.Linear())
 
+Temp_min=-35+273.15
+#Temp_min=0
 
-
-Temp_min=-100+273.15
-Temp_min=0
 SW_dict=OrderedDict()
+SW_dict_filtered=OrderedDict()
 
-
+LWP_min=0.001
 plt.figure(figsize=(20,20))
 i=1
 itime=12
 for key in run_path:
-    if 'C1' in key:
+    if 'C3' in key:
         itime=12
-    if 'C2' in key:
+        if key=='C3_DM10':
+            itime=11
+    if 'C1' in key:
         itime=16
     print key
     if 'GLOBAL' in key:
-#        if 'C3' in key:
+#        if 'C2' in key:
 #            continue
         sample_cube=stc.clean_cube(iris.load(run_path[key[:-6]+'DM10']+'L1/L1_CTT_Cloud_top_temperature.nc')[0])[itime,:,:]
         cube_SW=iris.load(run_path[key]+'All_time_steps/All_time_steps_m01s01i208_toa_outgoing_shortwave_flux.nc')[0][itime,:,:]
+        cube_LWP=iris.load(ukl.Obtain_name(run_path[key]+'L1/','LWP'))[0][itime,:,:]
         cube=stc.clean_cube(iris.load(run_path[key[:-6]+'DM10']+'L1/L1_CTT_Cloud_top_temperature.nc')[0])[itime,:,:]
 #        cube = cube.regrid(sample_cube, iris.analysis.Linear())
+        cube_LWP = cube_LWP.regrid(sample_cube, iris.analysis.Linear())
         cube_SW = cube_SW.regrid(sample_cube, iris.analysis.Linear())
     else:
         cube=stc.clean_cube(iris.load(run_path[key]+'L1/L1_CTT_Cloud_top_temperature.nc')[0])[itime,:,:]
+        cube_LWP=stc.clean_cube(iris.load(ukl.Obtain_name(run_path[key]+'L1/','LWP'))[0])[itime,:,:]
         cube_SW=stc.clean_cube(iris.load(run_path[key]+'All_time_steps/All_time_steps_m01s01i208_toa_outgoing_shortwave_flux.nc')[0])[itime,:,:]
-    mask=cube.data<Temp_min
-    plt.subplot(5,5,i)
-
+    mask=[(cube.data<Temp_min) | (cube_LWP.data<LWP_min)]
+    print np.any(cube_LWP.data<LWP_min) 
+    print cube_SW.coord('time').points
     masked_cube=cube.data
     masked_cube[mask]=np.nan
 #    plt.imshow(cube.data[:,:])
     masked_cube=cube_SW.data
+#    masked_cube[mask]=np.nan
+
+    np.save(pspc_fol+'SW_distribution_'+key,masked_cube)
+    SW_dict[key]=np.mean(masked_cube[~np.isnan(masked_cube)])
     masked_cube[mask]=np.nan
-#    plt.imshow(cube[12,:,:].data)
-    plt.imshow(masked_cube[:,:])
-    SW_dict[key]=np.nanmean(masked_cube)
-    plt.colorbar()
-    print cube
-    i=i+1
-#SW_dict['C3_GLOBAL']=SW_dict['C2_GLOBAL']#fix to avoid breaking, correct!! also the global runs will give more problems as there is not enough low cloud
+    np.save(pspc_fol+'SW_distribution_filtered_'+key,masked_cube)
+    levels=np.linspace(0,850,15).tolist()
+    SW_dict_filtered[key]=np.mean(masked_cube[~np.isnan(masked_cube)])
+    if 'C2' in key:
+#        plt.hist(cube.)
+        plt.subplot(3,3,i)
+        plt.imshow(masked_cube[:,:],vmin=0,vmax=850)
+        plt.title(key+str(SW_dict[key]))
+        plt.colorbar()
+#    print cube
+        i=i+1
+#SW_dict['C2_GLOBAL']=SW_dict['C1_GLOBAL']#fix to avoid breaking, correct!! also the global runs will give more problems as there is not enough low cloud
 #%%
 
 
@@ -77,9 +94,10 @@ t16=(datetime.datetime(2015,03,1,16)-datetime.datetime(1970,1,1)).total_seconds(
     
 sim_path='/nfs/a201/eejvt/CASIM/SECOND_CLOUD/'
 
-cube_DM10 =  stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/DM10/All_time_steps/','m01s01i208'))[0])
+#cube_DM10 =  stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/DM10/All_time_steps/','m01s01i208'))[0])
+cube_DM10 = stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/DM10/All_time_steps/','m01s01i208'))[0])
 
-#SW_dict[c2]
+#SW_dict[C1]
 
 reload(stc)
 model_lons,model_lats=stc.unrotated_grid(cube_DM10)
@@ -101,7 +119,8 @@ grid_z1 = sc.interpolate.griddata(coord, sat_LW, (X,Y), method='linear')
 plt.imshow(grid_z1)
 sat_cube=cube_DM10[16,:,:]
 sat_cube.data=grid_z1
-SW_dict['C2_SAT']=np.nanmean(grid_z1)
+SW_dict['C1_SATELLITE']=np.nanmean(grid_z1)
+SW_dict_filtered['C1_SATELLITE']=np.nanmean(grid_z1)
 
 #%%
 path='/nfs/a201/eejvt/CASIM/THIRD_CLOUD/SATELLITE/'
@@ -124,8 +143,8 @@ t16=(datetime.datetime(2015,01,10,16)-datetime.datetime(1970,1,1)).total_seconds
     
 sim_path='/nfs/a201/eejvt/CASIM/THIRD_CLOUD/'
 
-cube_DM10 = iris.load(ukl.Obtain_name(sim_path+'/DM10/All_time_steps/','m01s01i208'))[0]
-#SW_dict['C3_SAT']=np.nanmean(grid_z1)
+cube_DM10 = stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/DM10/All_time_steps/','m01s01i208'))[0])
+#SW_dict['C2_SATELLITE']=np.nanmean(grid_z1)
 reload(stc)
 model_lons,model_lats=stc.unrotated_grid(cube_DM10)
 #times_range=np.argwhere((times_ceres >= tdi) & (times_ceres <=tde))
@@ -143,7 +162,8 @@ X,Y=np.meshgrid(model_lons, model_lats)
 #data_old= sc.interpolate.griddata(coord_model, cube_oldm.data.flatten(), (X,Y), method='linear')
 #grid_z0 = sc.interpolate.griddata(coord, sat_SW, (X,Y), method='nearest')
 grid_z1 = sc.interpolate.griddata(coord, sat_LW, (X,Y), method='linear')
-SW_dict['C3_SAT']=np.nanmean(grid_z1)
+SW_dict['C2_SATELLITE']=np.nanmean(grid_z1)
+SW_dict_filtered['C2_SATELLITE']=np.nanmean(grid_z1)
 #%%
 path='/nfs/a201/eejvt/CASIM/SO_KALLI/SATELLITE/'
 from scipy.io import netcdf
@@ -173,7 +193,8 @@ tdi=(datetime.datetime(2014,12,9,ti)-datetime.datetime(1970,1,1)).total_seconds(
 tde=(datetime.datetime(2014,12,9,te)-datetime.datetime(1970,1,1)).total_seconds()
 
 t13=(datetime.datetime(2014,12,9,14)-datetime.datetime(1970,1,1)).total_seconds()/3600.
-cube = iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/All_time_steps/','m01s01i208'))[0]
+cube = stc.clean_cube(iris.load(ukl.Obtain_name('/nfs/a201/eejvt/CASIM/SO_KALLI/TRY2/ALL_ICE_PROC/All_time_steps/','m01s01i208'))[0])
+#cube_DM10 = stc.clean_cube(iris.load(ukl.Obtain_name(sim_path+'/DM10/All_time_steps/','m01s01i208'))[0])
 
 reload(stc)
 model_lons,model_lats=stc.unrotated_grid(cube)
@@ -193,16 +214,20 @@ X,Y=np.meshgrid(model_lons, model_lats)
 #grid_z0 = sc.interpolate.griddata(coord, sat_SW, (X,Y), method='nearest')
 grid_z1 = sc.interpolate.griddata(coord, sat_LW, (X,Y), method='linear')
 
-SW_dict['C1_SAT']=np.nanmean(grid_z1)
+SW_dict['C3_SATELLITE']=np.nanmean(grid_z1)
+SW_dict_filtered['C3_SATELLITE']=np.nanmean(grid_z1)
 
 
 plt.imshow(grid_z1)
 
 
 #%%
+#SW_dict['C2_GLOBAL']=0
 #SW_dict['C3_GLOBAL']=0
-#SW_dict['C1_GLOBAL']=0
-list_params=['SAT','GLOBAL','M92','DM10','DM15','VT17_HIGH','VT17_MEAN','VT17_MIN']
+np.save(pspc_fol+'SW_dict',SW_dict)
+np.save(pspc_fol+'SW_dict_filtered',SW_dict_filtered)
+
+list_params=['SATELLITE','GLOBAL','M92','DM10','DM15','VT17_HIGH','VT17_MEAN','VT17_MIN']
 list_colors=['b','y','r','green','brown','k','grey','silver']
 list_clouds=['C1','C2','C3']
 
@@ -212,8 +237,8 @@ fig, ax = plt.subplots()
 width = 0.1       # the width of the bars
 iparam=0
 for param in list_params:
-    means = tuple([SW_dict[cloud+'_'+param] for cloud in list_clouds])
-    std = tuple([SW_dict[cloud+'_'+param]*0.0 for cloud in list_clouds])
+    means = tuple([SW_dict_filtered[cloud+'_'+param] for cloud in list_clouds])
+    std = tuple([SW_dict_filtered[cloud+'_'+param]*0.0 for cloud in list_clouds])
 
 
     rects1 = ax.bar(ind+iparam*width, means, width, color=list_colors[iparam], yerr=std,label=param)
@@ -221,9 +246,9 @@ for param in list_params:
 plt.legend()
 ax.set_xticks(ind +len(list_params)*width/2 +width / 2)
 ax.set_xticklabels(tuple(list_clouds))
-ax.set_title('Low cloud reflected SW radiation')
+ax.set_title(' Reflected SW radiation')
 ax.set_ylabel('Reflected SW radiation')
-plt.ylim(200,500)
+plt.ylim(200,600)
 plt.xlim(0,5)
 
 
